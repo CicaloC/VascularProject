@@ -1,4 +1,4 @@
-function [x] = Newton_Raphson_tutorial(H,x0)
+function [x] = Newton_Raphson(H,x0)
 
 %=========================================================================
 % Newton Raphson Scheme, X_n = X_(n-1) - f/f'
@@ -25,16 +25,16 @@ else
     % first perform Newton Raphson for the initial guess 
     
     % evaluate the function, f, with the initial guess, x0
-    f = feval(H,x0); % call: equilibrium_r_or_loaded_tutorial
+    f1 = feval(H,x0); % call: equilibrium_r_or_loaded_tutorial
     
     iter = 0; % initial iteration
-    h = .1; % step size to perform the derivative (forward difference)    
+    h = .001; % step size to perform the derivative (forward difference)    
     
     xinc = (x0); % initial guess of the root
     xinc = xinc+h; % current root + derivative step
     f2 = feval(H,xinc);
-    f_prime0 = (f2-f)/h ; % compute the derivative of f, between x0 and xinc
-    u0 = f/f_prime0 ; % divide f by its derivative, f/f'
+    f_prime0 = (f2-f1)/h ; % compute the derivative of f, between x0 and xinc
+    u0 = f1/f_prime0 ; % divide f by its derivative, f/f'
     x = x0 -u0; % update guess for ro: X = X0 - f/f' (Newton-Raphson Method)
     
 
@@ -42,8 +42,8 @@ else
     % defined tolerance) or you have reached the maximum number of
     % iterations
     
-    while (maxiter>iter) && norm(f)>tol % iterate until one of the criteras are met
-        
+    while (maxiter>iter) && norm(f1)>tol % iterate until one of the criteras are met
+        disp(x)
         iter = iter+1; % current iteration number        
         f = feval(H,x); % evaluate f at x
         xinc = x; % current root guess

@@ -1,4 +1,4 @@
-function [fvalue] = equilibrium_r_or_loaded(x0)
+function [fvalue] = equilibrium_z_fz_loaded(x0)
 
 %=========================================================================
 % RADIAL EQUILIBRIUM - Local
@@ -25,7 +25,7 @@ ri = sqrt(ro.^2-1./lambda*(Ro^2-Ri^2)); % calculate the inner radius
 
 a = Ri;   % lower limit of the independent variable a
 b = Ro;   % upper limit of the independent variable b
-T1 = 0;    % initial value for the integral (T is the result of the integral)
+T2 = 0;    % initial value for the integral (T is the result of the integral)
           
 n = 100;    % number of spatial steps
 h = (b-a)/n;  % spatial step size, based on n and the bounds [a,b]
@@ -37,22 +37,22 @@ for index1 = 0:n-1 % for loop going from inner to outer radius
     drdR1 = 1/((r1/R1)*lambda);
     v = [drdR1, (r1/R1), lambda];
     F1 = diag(v) ; % define the the deformation gradient tensor (use the diag function)
-    sigma_extra1 = constitutive_model_r(F1); % calculate sigma_extra using the constitutive model
-    f1 = ((1/r1) *(sigma_extra1(2,2)-sigma_extra1(1,1)))*(R1/(lambda*r1)); % evaluate the function inside the integral, at R1
+    sigma_extra1 = constitutive_model_z(F1); % calculate sigma_extra using the constitutive model
+    f1 = ((r1) *((2*sigma_extra1(3,3)-sigma_extra1(1,1)-sigma_extra1(2,2)))); % evaluate the function inside the integral, at R1
     
     R2 = R1+h; % next position
     r2 = sqrt(ri^2 + (1/lambda)*((R2^2)-(Ri^2))); % calculate the radius by mapping from the reference configuration
     drdR2 = 1/((r2/R2)*lambda);
     v2 = [drdR2,(r2/R2),lambda];
     F2 =diag(v2) ; % define the the deformation gradient tensor (use the diag function)
-    sigma_extra2 = constitutive_model_r(F2); % calculate sigma_extra using the constitutive model
-    f2 = ((1/r2) *(sigma_extra2(2,2)-sigma_extra2(1,1)))*(R2/(lambda*r2)); % evaluate the function inside the integral, at R2
+    sigma_extra2 = constitutive_model_z(F2); % calculate sigma_extra using the constitutive model
+    f2 = ((r2) *((2*sigma_extra2(3,3)-sigma_extra2(1,1)-sigma_extra2(2,2)))); % evaluate the function inside the integral, at R2
     
     % calculate the intergral by solving the Trapezoidal Rule
-    T1 =T1+((f1+f2)/2)*(R2-R1) ; % remember to add the previous T_(index-1)
+    T2 =T2+((f1+f2)/2)*(R2-R1) ; % remember to add the previous T_(index-1)
       
 end
 
-fvalue = T1 - Pi; % ultimately fvalue needs to go to zero (within the defined tolerance)
+fvalue = T2 - lambda; % ultimately fvalue needs to go to zero (within the defined tolerance)
 
 end
